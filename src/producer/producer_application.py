@@ -13,8 +13,8 @@ _retry = functools.partial(
     is_async=True,
 )
 
-Key: typing.TypeAlias = typing.Union[bytes, str, None]
-Value: typing.TypeAlias = typing.Union[bytes, str, None]
+Key: typing.TypeAlias = typing.Optional[bytes]
+Value: typing.TypeAlias = typing.Optional[bytes]
 Messages: typing.TypeAlias = typing.Iterable[typing.Tuple[Key, Value]]
 
 

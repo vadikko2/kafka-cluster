@@ -13,7 +13,7 @@ logging.getLogger("aiokafka").setLevel("ERROR")
 logging.getLogger("asyncio").setLevel("ERROR")
 
 
-def message_factory() -> typing.Iterable[typing.Tuple[str, str]]:
+def message_factory() -> typing.Iterable[typing.Tuple[bytes, bytes]]:
     counter = 0
     while True:
         yield "test-key".encode("utf-8"), str(counter).encode("utf-8")

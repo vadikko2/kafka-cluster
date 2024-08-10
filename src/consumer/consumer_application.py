@@ -17,9 +17,21 @@ _retry = functools.partial(
 
 
 class ConsumerApplication:
-    def __init__(self, bootstrap_servers: list[str], group_id: str):
+    def __init__(
+        self,
+        bootstrap_servers: list[str],
+        group_id: str,
+        security_protocol: str = "PLAINTEXT",
+        sasl_mechanism: str = "PLAIN",
+        sasl_plain_username: str = "",
+        sasl_plain_password: str = "",
+    ):
         self._bootstrap_servers = bootstrap_servers
         self._group_id = group_id
+        self._security_protocol = security_protocol
+        self._sasl_mechanism = sasl_mechanism
+        self._sasl_plain_username = sasl_plain_username
+        self._sasl_plain_password = sasl_plain_password
 
     @staticmethod
     async def _consume(
@@ -55,10 +67,6 @@ class ConsumerApplication:
         handler: Handler,
         consumer_batch_size: int = 100,
         consumer_timeout_ms: int = 500,
-        security_protocol: str = "PLAINTEXT",
-        sasl_mechanism: str = "PLAIN",
-        sasl_plain_username: str = "",
-        sasl_plain_password: str = "",
         loop: asyncio.AbstractEventLoop = None,
     ):
         """Данный метод является единицей, которую можно запускать в отдельном потоке."""
@@ -73,10 +81,10 @@ class ConsumerApplication:
             group_id=self._group_id,
             fetch_max_wait_ms=consumer_timeout_ms,
             enable_auto_commit=False,
-            security_protocol=security_protocol,
-            sasl_mechanism=sasl_mechanism,
-            sasl_plain_username=sasl_plain_username,
-            sasl_plain_password=sasl_plain_password,
+            security_protocol=self._security_protocol,
+            sasl_mechanism=self._sasl_mechanism,
+            sasl_plain_username=self._sasl_plain_username,
+            sasl_plain_password=self._sasl_plain_password,
             loop=loop,
         )
 

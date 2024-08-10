@@ -15,6 +15,6 @@ WORKDIR /code/src
 COPY ./requirements.txt /code/requirements.txt
 RUN pip install -r /code/requirements.txt --root-user-action=ignore
 
-COPY ./src/ /code/src/
+COPY ./src/consumer /code/src/consumer
 
 CMD ["python3", "-m", "consumer.main"]

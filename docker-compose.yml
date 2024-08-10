@@ -59,3 +59,10 @@ services:
       dockerfile: src/consumer/Dockerfile
     links:
       - kafka-ui
+
+  producer:
+    build:
+      context: .
+      dockerfile: src/producer/Dockerfile
+    links:
+      - kafka-ui

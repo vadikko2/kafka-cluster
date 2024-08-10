@@ -6,8 +6,6 @@ import typing
 import aiokafka
 import retry_async
 
-logger = logging.getLogger("kafka-consumer")
-
 Handler: typing.TypeAlias = typing.Callable[[aiokafka.ConsumerRecord], typing.Awaitable[None]]
 
 _retry = functools.partial(
@@ -39,6 +37,7 @@ class ConsumerApplication:
         handler: Handler,
         consumer_timeout_ms: int,
         consumer_batch_size: int,
+        logger: logging.Logger,
     ):
         while True:
             # Читаем пачку сообщений. Делаем это именно таким образом потому, что не хотим, чтобы происходил autocommit
@@ -63,6 +62,7 @@ class ConsumerApplication:
     @retry_async.retry(tries=3, delay=15, is_async=True)
     async def start(
         self,
+        consumer_name: str,
         topics: list[str],
         handler: Handler,
         consumer_batch_size: int = 100,
@@ -72,6 +72,8 @@ class ConsumerApplication:
         """Данный метод является единицей, которую можно запускать в отдельном потоке."""
         loop = loop or asyncio.get_event_loop()
         # Создаем консьюмера в группе
+        logger = logging.getLogger(f"kafka-consumer[{consumer_name}]")
+
         logger.info(
             f"Starting consuming topics {topics} on servers {self._bootstrap_servers} from group {self._group_id}",
         )
@@ -90,7 +92,7 @@ class ConsumerApplication:
 
         await _retry(tries=3, delay=5)(consumer.start)()
         try:
-            await self._consume(consumer, handler, consumer_timeout_ms, consumer_batch_size)
+            await self._consume(consumer, handler, consumer_timeout_ms, consumer_batch_size, logger)
         except Exception as e:
             logger.error(f"Error processing message: {e}")
             raise

@@ -12,6 +12,8 @@ logger = logging.getLogger("kafka-consumer")
 logging.getLogger("aiokafka").setLevel("ERROR")
 logging.getLogger("asyncio").setLevel("ERROR")
 
+CONSUMERS_NUMBER = 2
+
 
 async def on_message(record: aiokafka.ConsumerRecord) -> None:
     logger.info(f"Handled message from {record.topic}: {record.value}")
@@ -27,5 +29,13 @@ if __name__ == "__main__":
     )
 
     logger.info("Starting consumer")
-    loop.create_task(consumer.start(topics=["test-kafka"], handler=on_message))
+    for consumer_number in range(CONSUMERS_NUMBER):
+        loop.create_task(
+            consumer.start(
+                consumer_name=f"consumer-{consumer_number + 1}",
+                topics=["test-kafka"],
+                handler=on_message,
+            ),
+        )
+
     loop.run_forever()

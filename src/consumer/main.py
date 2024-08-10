@@ -22,7 +22,7 @@ if __name__ == "__main__":
     asyncio.set_event_loop(loop)
 
     consumer = consumer_application.ConsumerApplication(
-        bootstrap_servers=["kafka:29092", "kafka2:29093"],
+        bootstrap_servers=["host.docker.internal:29092", "host.docker.internal:29093"],
         group_id="test-consumer",
     )
 

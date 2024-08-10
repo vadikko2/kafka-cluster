@@ -29,7 +29,7 @@ class ConsumerApplication:
         consumer_batch_size: int,
     ):
         while True:
-            # Читаем пачку сообщений. Делаем это именно таким образом, потому что не хотим, чтобы происходил autocommit
+            # Читаем пачку сообщений. Делаем это именно таким образом потому, что не хотим, чтобы происходил autocommit
             records = await consumer.getmany(timeout_ms=consumer_timeout_ms, max_records=consumer_batch_size)
             for tp, messages in records.items():
                 if not messages:
@@ -48,6 +48,7 @@ class ConsumerApplication:
                     await _retry(tries=3, delay=5)(consumer.commit)({tp: msg.offset + 1})
                     logger.info(f"Offset {msg.offset + 1} for topic {msg.topic} committed")
 
+    @retry_async.retry(tries=3, delay=15, is_async=True)
     async def start(
         self,
         topics: list[str],
@@ -63,6 +64,9 @@ class ConsumerApplication:
         """Данный метод является единицей, которую можно запускать в отдельном потоке."""
         loop = loop or asyncio.get_event_loop()
         # Создаем консьюмера в группе
+        logger.info(
+            f"Starting consuming topics {topics} on servers {self._bootstrap_servers} from group {self._group_id}",
+        )
         consumer = aiokafka.AIOKafkaConsumer(
             *topics,
             bootstrap_servers=self._bootstrap_servers,

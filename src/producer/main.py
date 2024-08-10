@@ -16,7 +16,8 @@ logging.getLogger("asyncio").setLevel("ERROR")
 def message_factory() -> typing.Iterable[typing.Tuple[bytes, bytes]]:
     counter = 0
     while True:
-        yield "test-key".encode("utf-8"), str(counter).encode("utf-8")
+        yield f"test-key-{counter}".encode("utf-8"), f"test-value-{counter}".encode("utf-8")
+
         counter += 1
         time.sleep(10)
 

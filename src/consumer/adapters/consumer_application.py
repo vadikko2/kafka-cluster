@@ -1,19 +1,12 @@
 import asyncio
-import functools
 import logging
 import typing
 
 import aiokafka
-import retry_async
 
 Key: typing.TypeAlias = typing.Optional[bytes]
 Value: typing.TypeAlias = typing.Optional[bytes]
 Handler: typing.TypeAlias = typing.Callable[[Key, Value], typing.Awaitable[None]]
-
-_retry = functools.partial(
-    retry_async.retry,
-    is_async=True,
-)
 
 
 class ConsumerApplication:
@@ -56,12 +49,11 @@ class ConsumerApplication:
                         extra={"topic": msg.topic},
                     )
                     # До победного пытаемся обработать сообщение
-                    await _retry(tries=3, delay=5)(handler)(msg.key, msg.value)
+                    await handler(msg.key, msg.value)
                     # Делаем commit только по тем сообщениям, которые обработали
-                    await _retry(tries=3, delay=5)(consumer.commit)({tp: msg.offset + 1})
+                    await consumer.commit({tp: msg.offset + 1})
                     logger.info(f"Offset {msg.offset + 1} for topic {msg.topic} committed")
 
-    @retry_async.retry(tries=3, delay=15, is_async=True)
     async def start(
         self,
         consumer_name: str,
@@ -92,11 +84,11 @@ class ConsumerApplication:
             loop=loop,
         )
 
-        await _retry(tries=3, delay=5)(consumer.start)()
+        await consumer.start()
         try:
             await self._consume(consumer, handler, consumer_timeout_ms, consumer_batch_size, logger)
         except Exception as e:
             logger.error(f"Error processing message: {e}")
             raise
         finally:
-            await _retry(tries=3, delay=5)(consumer.stop)()
+            await consumer.stop()

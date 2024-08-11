@@ -58,7 +58,7 @@ class PointsHandler:
     @staticmethod
     def _gather_result(history_record: HistoryRecord | None, obj: typing.Mapping) -> HistoryRecord:
         start = time.time()
-        time.sleep(random.uniform(0.05, 0.01))
+        time.sleep(random.uniform(0.005, 0.01))
         logger.info(f"Handling ETA {time.time() - start} seconds")
         return [[], [], []]  # noqa
 
@@ -66,13 +66,12 @@ class PointsHandler:
         history_record = await self._history_storage.read_history(key.decode("utf-8"))
         key_str = key.decode("utf-8")
 
-        # new_record = await self._loop.run_in_executor(
-        #     self._executor,
-        #     self._gather_result,
-        #     history_record,
-        #     value.decode("utf-8"),
-        # )
-        new_record = self._gather_result(history_record, {})
+        new_record = await self._loop.run_in_executor(
+            self._executor,
+            self._gather_result,
+            history_record,
+            value.decode("utf-8"),
+        )
 
         await self._result_producer.produce(
             {

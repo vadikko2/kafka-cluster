@@ -14,7 +14,7 @@ logging.getLogger("aiokafka").setLevel("ERROR")
 logging.getLogger("asyncio").setLevel("ERROR")
 
 CONSUMERS_NUMBER = 1
-POOL_SIZE = 2
+POOL_SIZE = 16
 
 
 async def on_message(key: consumer_application.Key, value: consumer_application.Value) -> None:
@@ -45,7 +45,7 @@ if __name__ == "__main__":
                         history_storage=history_storages.RedisHistoryStorage(redis_client=redis_client),
                     ),
                     loop=loop,
-                    consumer_batch_size=1000,
+                    consumer_batch_size=10,
                     consumer_timeout_ms=1,
                 ),
             )

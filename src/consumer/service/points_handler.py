@@ -5,30 +5,18 @@ import time
 import typing
 from concurrent.futures import process, thread
 
-import pydantic
-
-HistoryRecord: typing.TypeAlias = typing.List[list[str], list[float], list[float]]
+HistoryRecord: typing.TypeAlias = list[list[str] | list[float]]
 
 logger = logging.getLogger("points-handler")
 
 
-class Result(pydantic.BaseModel, frozen=True):
-    result: typing.Dict = pydantic.Field(default={})
-
-    status: typing.Literal["ok", "error"] = pydantic.Field(default="ok")
-    error: str | None = pydantic.Field(default=None)
-
-    def __repr__(self):
-        return f"Result({self.__repr__()})"
-
-
 class ResultProducer(typing.Protocol):
-    async def produce(self, value: Result, key: str) -> None:
+    async def produce(self, value: typing.Dict[str, int], key: str) -> None:
         pass
 
 
 class DevNullResultProducer:
-    async def produce(self, value: Result, key: str) -> None:
+    async def produce(self, value: typing.Dict[str, int], key: str) -> None:
         logger.warning(f"Resul {value} for key {key} will we lost")
 
 
@@ -69,33 +57,27 @@ class PointsHandler:
 
     @staticmethod
     def _gather_result(history_record: HistoryRecord | None, obj: typing.Mapping) -> HistoryRecord:
-        logger.info("handling obj", extra={"obj": obj, "history_record": history_record})
+        start = time.time()
         time.sleep(random.uniform(0.05, 0.01))
+        logger.info(f"Handling ETA {time.time() - start} seconds")
         return [[], [], []]  # noqa
 
     async def __call__(self, key: typing.Optional[bytes], value: typing.Optional[bytes]) -> None:
         history_record = await self._history_storage.read_history(key.decode("utf-8"))
         key_str = key.decode("utf-8")
 
-        new_record = await self._loop.run_in_executor(
-            self._executor,
-            self._gather_result,
-            history_record,
-            value.decode("utf-8"),
-        )
+        # new_record = await self._loop.run_in_executor(
+        #     self._executor,
+        #     self._gather_result,
+        #     history_record,
+        #     value.decode("utf-8"),
+        # )
+        new_record = self._gather_result(history_record, {})
 
         await self._result_producer.produce(
-            Result.model_validate(
-                {
-                    "result": {
-                        "data": {
-                            "squats": 3,
-                        },
-                    },
-                    "status": "ok",
-                    "error": None,
-                },
-            ),
+            {
+                "squats": 3,
+            },
             key_str,
         )
 

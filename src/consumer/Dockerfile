@@ -16,5 +16,6 @@ COPY ./requirements.txt /code/requirements.txt
 RUN pip install -r /code/requirements.txt --root-user-action=ignore
 
 COPY ./src/consumer /code/src/consumer
+COPY ./src/.env /code/src/.env
 
 CMD ["python3", "-m", "consumer.main"]

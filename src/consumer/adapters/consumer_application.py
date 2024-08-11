@@ -52,7 +52,7 @@ class ConsumerApplication:
 
                 for msg in messages:
                     logger.info(
-                        f"Received message from {msg.topic}: {msg.value}",
+                        f"Received message from {msg.topic}",
                         extra={"topic": msg.topic},
                     )
                     # До победного пытаемся обработать сообщение

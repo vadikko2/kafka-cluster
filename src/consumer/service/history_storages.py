@@ -1,7 +1,11 @@
+import logging
+
 import orjson
 import redis.asyncio as redis
 
 from consumer.service import points_handler
+
+logger = logging.getLogger("redis-history-storage")
 
 
 class RedisHistoryStorage:
@@ -13,4 +17,5 @@ class RedisHistoryStorage:
         return record and orjson.loads(record)
 
     async def append_to_history(self, history_record: points_handler.HistoryRecord, key: str) -> None:
+        logger.info(f"Set history record to key {key}")
         await self._redis_client.set(key, orjson.dumps(history_record))

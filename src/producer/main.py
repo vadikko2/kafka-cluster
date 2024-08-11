@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import random
 import time
 import typing
 
@@ -12,14 +13,16 @@ logger = logging.getLogger("kafka-producer")
 logging.getLogger("aiokafka").setLevel("ERROR")
 logging.getLogger("asyncio").setLevel("ERROR")
 
+RPS = 1000
+
 
 def message_factory() -> typing.Iterable[typing.Tuple[bytes, bytes]]:
     counter = 0
     while True:
-        yield f"test-key-{counter}".encode("utf-8"), f"test-value-{counter}".encode("utf-8")
-
-        counter += 1
-        time.sleep(10)
+        for _ in range(RPS):
+            yield f"test-key-{counter}".encode("utf-8"), f"test-value-{counter}".encode("utf-8")
+            counter += 1
+        time.sleep(random.uniform(0, 1))
 
 
 if __name__ == "__main__":

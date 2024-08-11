@@ -1,7 +1,9 @@
 import asyncio
 import logging
+from concurrent.futures import process
 
-from consumer import consumer_application
+from consumer.adapters import consumer_application
+from consumer.service import points_handler
 
 logging.basicConfig(level="DEBUG")
 
@@ -10,7 +12,7 @@ logger = logging.getLogger("kafka-consumer")
 logging.getLogger("aiokafka").setLevel("ERROR")
 logging.getLogger("asyncio").setLevel("ERROR")
 
-CONSUMERS_NUMBER = 2
+CONSUMERS_NUMBER = 16
 
 
 async def on_message(key: consumer_application.Key, value: consumer_application.Value) -> None:
@@ -27,13 +29,17 @@ if __name__ == "__main__":
     )
 
     logger.info("Starting consumer")
-    for consumer_number in range(CONSUMERS_NUMBER):
-        loop.create_task(
-            consumer.start(
-                consumer_name=f"consumer-{consumer_number + 1}",
-                topics=["test-kafka"],
-                handler=on_message,
-            ),
-        )
+    with process.ProcessPoolExecutor(max_workers=CONSUMERS_NUMBER) as pool:
+        for consumer_number in range(CONSUMERS_NUMBER):
+            loop.create_task(
+                consumer.start(
+                    consumer_name=f"consumer-{consumer_number + 1}",
+                    topics=["test-kafka"],
+                    handler=points_handler.PointsHandler(
+                        pool_executor=process.ProcessPoolExecutor(max_workers=CONSUMERS_NUMBER),
+                    ),
+                    loop=loop,
+                ),
+            )
 
-    loop.run_forever()
+        loop.run_forever()

@@ -6,7 +6,9 @@ import typing
 import aiokafka
 import retry_async
 
-Handler: typing.TypeAlias = typing.Callable[[aiokafka.ConsumerRecord], typing.Awaitable[None]]
+Key: typing.TypeAlias = typing.Optional[bytes]
+Value: typing.TypeAlias = typing.Optional[bytes]
+Handler: typing.TypeAlias = typing.Callable[[Key, Value], typing.Awaitable[None]]
 
 _retry = functools.partial(
     retry_async.retry,
@@ -54,7 +56,7 @@ class ConsumerApplication:
                         extra={"topic": msg.topic},
                     )
                     # До победного пытаемся обработать сообщение
-                    await _retry(tries=3, delay=5)(handler)(msg)
+                    await _retry(tries=3, delay=5)(handler)(msg.key, msg.value)
                     # Делаем commit только по тем сообщениям, которые обработали
                     await _retry(tries=3, delay=5)(consumer.commit)({tp: msg.offset + 1})
                     logger.info(f"Offset {msg.offset + 1} for topic {msg.topic} committed")

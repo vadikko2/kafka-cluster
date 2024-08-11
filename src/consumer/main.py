@@ -1,8 +1,6 @@
 import asyncio
 import logging
 
-import aiokafka
-
 from consumer import consumer_application
 
 logging.basicConfig(level="DEBUG")
@@ -15,8 +13,8 @@ logging.getLogger("asyncio").setLevel("ERROR")
 CONSUMERS_NUMBER = 2
 
 
-async def on_message(record: aiokafka.ConsumerRecord) -> None:
-    logger.info(f"Handled message from {record.topic}: {record.value}")
+async def on_message(key: consumer_application.Key, value: consumer_application.Value) -> None:
+    logger.info(f"Handled message key={key}, value={value}")
 
 
 if __name__ == "__main__":

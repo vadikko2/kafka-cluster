@@ -13,8 +13,8 @@ logger = logging.getLogger("kafka-consumer")
 logging.getLogger("aiokafka").setLevel("ERROR")
 logging.getLogger("asyncio").setLevel("ERROR")
 
-CONSUMERS_NUMBER = 1
-POOL_SIZE = 16
+CONSUMERS_NUMBER = 2
+POOL_SIZE = 4
 
 
 async def on_message(key: consumer_application.Key, value: consumer_application.Value) -> None:

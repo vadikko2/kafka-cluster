@@ -127,6 +127,3 @@ class RedisDriver:
             metrics.healthcheck.set({"healthcheck": "redis"}, metrics.STATUS_UNAVAILABLE)
 
         return False
-
-
-redis_client = RedisDriver()

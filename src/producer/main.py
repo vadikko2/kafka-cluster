@@ -18,8 +18,8 @@ def message_factory() -> typing.Iterable[typing.Tuple[bytes, bytes]]:
     counter = 0
     while True:
         for _ in range(RPS):
-            yield bytes(
-                f"excounter_test|test1|squats|{counter}",
+            yield f"excounter_test|test1|squats|{counter}".encode(
+                "utf-8",
             ), b"""{
                 "user_id": "test1",
                 "ex_id": "squats",

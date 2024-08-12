@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import time
 import typing
 from concurrent.futures import process, thread
 
@@ -70,12 +71,14 @@ class PointsHandler:
         else:
             label_history, rD_x, rD_y = history_record
 
+        start = time.perf_counter()
         result, new_label_history, new_rD_x, new_rD_y = model.count_complete_ex(
             obj,
             labels_history=label_history,
             old_rD_x=rD_x,
             old_rD_y=rD_y,
         )
+        logger.info(f"Result {result} took {time.perf_counter() - start} sec")
         return result, [new_label_history, new_rD_x, new_rD_y]
 
     async def __call__(self, key: typing.Optional[bytes], value: typing.Optional[bytes]) -> None:

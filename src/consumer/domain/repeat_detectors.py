@@ -5,7 +5,7 @@ LEGS_POINTS = (13, 14)
 
 
 def get_center(keypoints: np.ndarray, points):
-    return np.mean(keypoints[points, :-1], axis=0)[::-1]
+    return np.mean(keypoints[:, points, :-1], axis=1)
 
 
 class RepeatDetector:

@@ -13,8 +13,8 @@ config = {
         "s3_dir": os.getenv("SERVICE_S3_DIR"),
         "content_type": os.getenv("SERVICE_CONTENT_TYPE"),
         "tmp_dir": os.getenv("SERVICE_TMP_DIR"),
-        "pool_cache_limit": os.getenv("SERVICE_POOL_CACHE_LIMIT") or 5,
-        "pool_size": os.getenv("SERVICE_POOL_SIZE") or 10,
+        "consumers_number": os.getenv("SERVICE_CONSUMERS_NUMBER") or 10,
+        "pool_size": os.getenv("SERVICE_POOL_SIZE") or 4,
         "graceful_shutdown_timeout": os.getenv("SERVICE_GRACEFUL_SHUTDOWN_TIMEOUT"),
         "readiness_interval": os.getenv("SERVICE_READINESS_INTERVAL"),
         "db_table": os.getenv("SERVICE_DB_TABLE"),
@@ -49,6 +49,8 @@ config = {
         "sasl.password": os.environ.get("KAFKA_SASL_PASSWORD"),
         "security_protocol": os.environ.get("KAFKA_SECURITY_PROTOCOL"),
         "sasl_mechanism": os.environ.get("KAFKA_SASL_MECHANISM"),
+        "consumer_batch_size": os.getenv("KAFKA_CONSUMER_BATCH_SIZE") or 10,
+        "consumer_timeout_ms": os.getenv("KAFKA_CONSUMER_TIMEOUT_MS") or 1,
     },
     "Sentinel": {
         "host": os.environ.get("REDIS_SENTINEL_ENDPOINT"),
@@ -64,5 +66,6 @@ config = {
         "port": os.environ.get("REDIS_PORT"),
         "username": os.environ.get("REDIS_USERNAME"),
         "password": os.environ.get("REDIS_PASSWORD"),
+        "ttl": os.environ.get("REDIS_TTL") or 120,
     },
 }

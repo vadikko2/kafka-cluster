@@ -36,7 +36,9 @@ class Model:
 
         if old_rD_x and old_rD_y:
             repeat_detecor.set_data(old_rD_x, old_rD_y)
+
         keypoints_with_scores = np.array(obj["points"])
+
         if obj["with_clf"]:
             pred = self.pose_clf(keypoints_with_scores, proba=True)
             pred = np.concatenate([pred[[0] * (self.frame_conf_count - 1)], pred])

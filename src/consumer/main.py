@@ -17,8 +17,8 @@ logger = logging.getLogger("kafka-consumer")
 logging.getLogger("aiokafka").setLevel("ERROR")
 logging.getLogger("asyncio").setLevel("ERROR")
 
-CONSUMERS_NUMBER = 2
-POOL_SIZE = 4
+CONSUMERS_NUMBER = int(settings.config["Service"]["consumers_number"])
+POOL_SIZE = int(settings.config["Service"]["pool_size"])
 
 
 async def on_message(key: consumer_application.Key, value: consumer_application.Value) -> None:
@@ -73,11 +73,14 @@ if __name__ == "__main__":
                         ),
                         pool_executor=pool,
                         result_producer=result_producers.RedisResultProducer(redis_client=redis_client),
-                        history_storage=history_storages.RedisHistoryStorage(redis_client=redis_client),
+                        history_storage=history_storages.RedisHistoryStorage(
+                            redis_client=redis_client,
+                            ttl=int(settings.config["Redis"]["ttl"]),
+                        ),
                     ),
                     loop=loop,
-                    consumer_batch_size=10,
-                    consumer_timeout_ms=1,
+                    consumer_batch_size=int(settings.config["KafkaConsumer"]["consumer_batch_size"]),
+                    consumer_timeout_ms=int(settings.config["KafkaConsumer"]["consumer_timeout_ms"]),
                 ),
             )
 

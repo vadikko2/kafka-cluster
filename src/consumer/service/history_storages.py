@@ -9,8 +9,9 @@ logger = logging.getLogger("redis-history-storage")
 
 
 class RedisHistoryStorage:
-    def __init__(self, redis_client: redis.Redis):
+    def __init__(self, redis_client: redis.Redis, ttl: int = 120):
         self._redis_client = redis_client
+        self._ttl = ttl
 
     async def read_history(self, key: str) -> points_handler.HistoryRecord | None:
         record = await self._redis_client.get(key)
@@ -18,4 +19,4 @@ class RedisHistoryStorage:
 
     async def append_to_history(self, history_record: points_handler.HistoryRecord, key: str) -> None:
         logger.info(f"Set history record to key {key}")
-        await self._redis_client.set(key, orjson.dumps(history_record))
+        await self._redis_client.set(key, orjson.dumps(history_record), ex=self._ttl)

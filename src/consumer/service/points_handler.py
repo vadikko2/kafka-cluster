@@ -79,7 +79,10 @@ class PointsHandler:
         return result, [new_label_history, new_rD_x, new_rD_y]
 
     async def __call__(self, key: typing.Optional[bytes], value: typing.Optional[bytes]) -> None:
-        history_record = await self._history_storage.read_history(key.decode("utf-8"))
+
+        value = orjson.loads(value.decode("utf-8"))
+        history_key_str = f'{value.get("user_id")}|{value.get("ex_id")}|{value.get("label")}'
+        history_record = await self._history_storage.read_history(history_key_str)
         key_str = key.decode("utf-8")
 
         result, new_history_record = await self._loop.run_in_executor(
@@ -87,9 +90,9 @@ class PointsHandler:
             self._gather_result,
             self._model,
             history_record,
-            orjson.loads(value.decode("utf-8")),
+            value,
         )
 
         await self._result_producer.produce(result, key_str)
 
-        await self._history_storage.append_to_history(new_history_record, key_str)
+        await self._history_storage.append_to_history(new_history_record, history_key_str)

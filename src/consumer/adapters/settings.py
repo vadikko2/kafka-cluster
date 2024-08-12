@@ -18,6 +18,7 @@ config = {
         "graceful_shutdown_timeout": os.getenv("SERVICE_GRACEFUL_SHUTDOWN_TIMEOUT"),
         "readiness_interval": os.getenv("SERVICE_READINESS_INTERVAL"),
         "db_table": os.getenv("SERVICE_DB_TABLE"),
+        "executor": os.getenv("SERVICE_EXECUTOR") or "thread",
     },
     "Model": {
         "model_path": os.getenv("MODEL_PATH", "consumer/data/clf_model/pose_clf_1"),

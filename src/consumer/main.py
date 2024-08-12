@@ -3,7 +3,6 @@ import json
 import logging
 import pickle as pkl
 import typing
-from concurrent.futures import thread
 
 from consumer.adapters import consumer_application, settings
 from consumer.adapters.redis_clients import client
@@ -39,15 +38,27 @@ if __name__ == "__main__":
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
 
+    tasks = []
+
     logger.info("Starting consumer")
-    # executor = process.ProcessPoolExecutor
-    executor = thread.ThreadPoolExecutor
+
+    executor = None
+
+    if settings.config["Service"]["executor"].lower() == "thread":
+        from concurrent.futures import thread
+
+        executor = thread.ThreadPoolExecutor
+    elif settings.config["Service"]["executor"].lower() == "process":
+        from concurrent.futures import process
+
+        executor = process.ProcessPoolExecutor
+
     with executor(max_workers=POOL_SIZE) as pool:
         for consumer_number in range(CONSUMERS_NUMBER):
             model, meta = load_artifacts(
                 settings.config["Model"]["model_path"],
             )
-            loop.create_task(
+            tasks.append(
                 consumer_application.ConsumerApplication(
                     # bootstrap_servers=["host.docker.internal:29092", "host.docker.internal:29093"],
                     bootstrap_servers=settings.config["KafkaConsumer"]["servers"],
@@ -81,4 +92,5 @@ if __name__ == "__main__":
                 ),
             )
 
-        loop.run_forever()
+        loop.run_until_complete(asyncio.gather(*tasks))
+        # loop.run_forever()

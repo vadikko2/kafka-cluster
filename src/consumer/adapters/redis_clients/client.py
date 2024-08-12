@@ -1,6 +1,6 @@
-import json
 import time
 
+import orjson
 from loguru import logger
 from redis.asyncio import Redis
 
@@ -31,7 +31,7 @@ class CustomRedis(Redis):
         await ps.unsubscribe()
         await ps.close()
 
-        return json.loads(result)
+        return orjson.loads(result)
 
     @metrics.hist_timer(metrics.healthcheck_histogram, {"healthcheck": "redis"})
     @metrics.timer(metrics.healthcheck_summary, {"healthcheck": "redis"})
@@ -40,12 +40,12 @@ class CustomRedis(Redis):
             st_t = time.time()  # noqa F841
             res = await self.keys("*")  # noqa F841
             end_t = time.time()  # noqa F841
-            # if res:
-            #     wait_time = end_t - st_t
-            # if wait_time < 2:
-            #     metrics.healthcheck.set({"healthcheck": "redis"}, metrics.STATUS_HEALTHY)
-            # else:
-            #     metrics.healthcheck.set({"healthcheck": "redis"}, metrics.STATUS_DEGRADATION)
+            if res:
+                wait_time = end_t - st_t
+            if wait_time < 2:
+                metrics.healthcheck.set({"healthcheck": "redis"}, metrics.STATUS_HEALTHY)
+            else:
+                metrics.healthcheck.set({"healthcheck": "redis"}, metrics.STATUS_DEGRADATION)
             return True
         except Exception as err:
             logger.exception(err)

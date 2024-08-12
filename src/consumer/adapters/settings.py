@@ -20,6 +20,7 @@ config = {
         "db_table": os.getenv("SERVICE_DB_TABLE"),
     },
     "Model": {
+        "model_path": os.getenv("MODEL_PATH", "consumer/data/clf_model/pose_clf_1"),
         "write_width": os.getenv("MODEL_WRITE_WIDTH") or 720,
         "write_height": os.getenv("MODEL_WRITE_HEIGHT") or 720,
         "bip_threshold": os.getenv("MODEL_BIP_THRESHOLD") or 0.1,

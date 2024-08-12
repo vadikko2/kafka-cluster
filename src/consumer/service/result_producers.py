@@ -12,5 +12,5 @@ class RedisResultProducer:
         self._redis_client = redis_client
 
     async def produce(self, value: typing.Dict[str, int], key: str) -> None:
-        logger.info(f"Set result key {key}")
+        logger.info(f"Produce result {value} key {key}")
         await self._redis_client.publish(key, orjson.dumps(value))

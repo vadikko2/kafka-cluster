@@ -1,9 +1,11 @@
 import asyncio
 import logging
-import random
-import time
 import typing
 from concurrent.futures import process, thread
+
+import orjson
+
+from consumer.domain import models
 
 HistoryRecord: typing.TypeAlias = list[list[str] | list[float]]
 
@@ -42,11 +44,13 @@ class InMemoryHistoryStorage:
 class PointsHandler:
     def __init__(
         self,
+        model: models.Model,
         result_producer: ResultProducer | None = None,
         history_storage: HistoryStorage | None = None,
         pool_executor: process.ProcessPoolExecutor | thread.ThreadPoolExecutor | None = None,
         loop: asyncio.AbstractEventLoop | None = None,
     ) -> None:
+        self._model = model
         self._result_producer = result_producer or DevNullResultProducer()
         self._history_storage = history_storage or InMemoryHistoryStorage()
         self._executor = pool_executor
@@ -56,28 +60,36 @@ class PointsHandler:
         self.__qualname__ = self.__class__.__qualname__
 
     @staticmethod
-    def _gather_result(history_record: HistoryRecord | None, obj: typing.Mapping) -> HistoryRecord:
-        start = time.time()
-        time.sleep(random.uniform(0.005, 0.01))
-        logger.info(f"Handling ETA {time.time() - start} seconds")
-        return [[], [], []]  # noqa
+    def _gather_result(
+        model: models.Model,
+        history_record: HistoryRecord | None,
+        obj: typing.Mapping,
+    ) -> tuple[dict[str, int], HistoryRecord]:
+        if history_record is None:
+            label_history = rD_x = rD_y = None
+        else:
+            label_history, rD_x, rD_y = history_record
+
+        result, new_label_history, new_rD_x, new_rD_y = model.count_complete_ex(
+            obj,
+            labels_history=label_history,
+            old_rD_x=rD_x,
+            old_rD_y=rD_y,
+        )
+        return result, [new_label_history, new_rD_x, new_rD_y]
 
     async def __call__(self, key: typing.Optional[bytes], value: typing.Optional[bytes]) -> None:
         history_record = await self._history_storage.read_history(key.decode("utf-8"))
         key_str = key.decode("utf-8")
 
-        new_record = await self._loop.run_in_executor(
+        result, new_history_record = await self._loop.run_in_executor(
             self._executor,
             self._gather_result,
+            self._model,
             history_record,
-            value.decode("utf-8"),
+            orjson.loads(value.decode("utf-8")),
         )
 
-        await self._result_producer.produce(
-            {
-                "squats": 3,
-            },
-            key_str,
-        )
+        await self._result_producer.produce(result, key_str)
 
-        await self._history_storage.append_to_history(new_record, key_str)
+        await self._history_storage.append_to_history(new_history_record, key_str)

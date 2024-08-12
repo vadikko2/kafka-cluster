@@ -3,7 +3,7 @@ import json
 import logging
 import pickle as pkl
 import typing
-from concurrent.futures import process
+from concurrent.futures import thread
 
 from consumer.adapters import consumer_application, settings
 from consumer.adapters.redis_clients import client
@@ -46,8 +46,8 @@ if __name__ == "__main__":
     )
 
     logger.info("Starting consumer")
-    executor = process.ProcessPoolExecutor
-    # executor = thread.ThreadPoolExecutor
+    # executor = process.ProcessPoolExecutor
+    executor = thread.ThreadPoolExecutor
     with executor(max_workers=POOL_SIZE) as pool:
         for consumer_number in range(CONSUMERS_NUMBER):
             redis_client = client.CustomRedis()

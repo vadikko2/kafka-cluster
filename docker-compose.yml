@@ -66,27 +66,27 @@ services:
       dockerfile: src/consumer/Dockerfile
     links:
       - kafka-ui
-
-  consumer3:
-    build:
-      context: .
-      dockerfile: src/consumer/Dockerfile
-    links:
-      - kafka-ui
-
-  consumer4:
-    build:
-      context: .
-      dockerfile: src/consumer/Dockerfile
-    links:
-      - kafka-ui
-
-  consumer5:
-    build:
-      context: .
-      dockerfile: src/consumer/Dockerfile
-    links:
-      - kafka-ui
+#
+#  consumer3:
+#    build:
+#      context: .
+#      dockerfile: src/consumer/Dockerfile
+#    links:
+#      - kafka-ui
+#
+#  consumer4:
+#    build:
+#      context: .
+#      dockerfile: src/consumer/Dockerfile
+#    links:
+#      - kafka-ui
+#
+#  consumer5:
+#    build:
+#      context: .
+#      dockerfile: src/consumer/Dockerfile
+#    links:
+#      - kafka-ui
 
   producer:
     build:

@@ -16,5 +16,6 @@ COPY ./requirements.txt /code/requirements.txt
 RUN pip install -r /code/requirements.txt --root-user-action=ignore
 
 COPY ./src/producer /code/src/producer
+COPY ./src/.env /code/src/.env
 
 CMD ["python3", "-m", "producer.main"]

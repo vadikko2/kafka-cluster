@@ -39,23 +39,20 @@ if __name__ == "__main__":
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
 
-    consumer = consumer_application.ConsumerApplication(
-        # bootstrap_servers=["host.docker.internal:29092", "host.docker.internal:29093"],
-        bootstrap_servers=settings.config["KafkaConsumer"]["servers"],
-        group_id=settings.config["KafkaConsumer"]["consumer_group_id"],
-    )
-
     logger.info("Starting consumer")
     # executor = process.ProcessPoolExecutor
     executor = thread.ThreadPoolExecutor
     with executor(max_workers=POOL_SIZE) as pool:
         for consumer_number in range(CONSUMERS_NUMBER):
-            redis_client = client.CustomRedis()
             model, meta = load_artifacts(
                 settings.config["Model"]["model_path"],
             )
             loop.create_task(
-                consumer.start(
+                consumer_application.ConsumerApplication(
+                    # bootstrap_servers=["host.docker.internal:29092", "host.docker.internal:29093"],
+                    bootstrap_servers=settings.config["KafkaConsumer"]["servers"],
+                    group_id=settings.config["KafkaConsumer"]["consumer_group_id"],
+                ).start(
                     consumer_name=f"consumer-{consumer_number + 1}",
                     topics=[settings.config["KafkaConsumer"]["topic"]],
                     handler=points_handler.PointsHandler(
@@ -72,9 +69,9 @@ if __name__ == "__main__":
                             model_config=settings.config["Model"],
                         ),
                         pool_executor=pool,
-                        result_producer=result_producers.RedisResultProducer(redis_client=redis_client),
+                        result_producer=result_producers.RedisResultProducer(redis_client=client.CustomRedis()),
                         history_storage=history_storages.RedisHistoryStorage(
-                            redis_client=redis_client,
+                            redis_client=client.CustomRedis(),
                             ttl=int(settings.config["Redis"]["ttl"]),
                         ),
                     ),

@@ -49,7 +49,10 @@ def bootstrap_on_message(model_path: str = None) -> consumer_application.Handler
     )
 
 
-def bootstrap_consumer_task(on_message: consumer_application.Handler) -> typing.Coroutine:
+def bootstrap_consumer_task(
+    on_message: consumer_application.Handler,
+    loop: asyncio.AbstractEventLoop = None,
+) -> typing.Coroutine:
     """Ининциализация консьюмера"""
     return consumer_application.ConsumerApplication(
         bootstrap_servers=settings.config["KafkaConsumer"]["servers"],
@@ -72,5 +75,5 @@ if __name__ == "__main__":
 
     logger.info("Starting consumer")
     for consumer_number in range(CONSUMERS_NUMBER):
-        tasks.append(bootstrap_consumer_task(bootstrap_on_message()))
+        tasks.append(bootstrap_consumer_task(bootstrap_on_message(), loop=loop))
     loop.run_until_complete(asyncio.gather(*tasks))

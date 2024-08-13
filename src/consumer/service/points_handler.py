@@ -48,12 +48,10 @@ class PointsHandler:
         model: models.Model,
         result_producer: ResultProducer | None = None,
         history_storage: HistoryStorage | None = None,
-        loop: asyncio.AbstractEventLoop | None = None,
     ) -> None:
         self._model = model
         self._result_producer = result_producer or DevNullResultProducer()
         self._history_storage = history_storage or InMemoryHistoryStorage()
-        self._loop = loop or asyncio.get_event_loop()
         # Чтобы нормально работал retry
         self.__name__ = self.__class__.__name__
         self.__qualname__ = self.__class__.__qualname__

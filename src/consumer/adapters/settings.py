@@ -14,7 +14,6 @@ config = {
         "content_type": os.getenv("SERVICE_CONTENT_TYPE"),
         "tmp_dir": os.getenv("SERVICE_TMP_DIR"),
         "consumers_number": os.getenv("SERVICE_CONSUMERS_NUMBER") or 10,
-        "pool_size": os.getenv("SERVICE_POOL_SIZE") or 4,
         "graceful_shutdown_timeout": os.getenv("SERVICE_GRACEFUL_SHUTDOWN_TIMEOUT"),
         "readiness_interval": os.getenv("SERVICE_READINESS_INTERVAL"),
         "db_table": os.getenv("SERVICE_DB_TABLE"),

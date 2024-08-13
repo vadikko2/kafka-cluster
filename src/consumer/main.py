@@ -17,7 +17,6 @@ logging.getLogger("aiokafka").setLevel("ERROR")
 logging.getLogger("asyncio").setLevel("ERROR")
 
 CONSUMERS_NUMBER = int(settings.config["Service"]["consumers_number"])
-POOL_SIZE = int(settings.config["Service"]["pool_size"])
 
 
 def bootstrap_on_message(model_path: str = None) -> consumer_application.Handler:

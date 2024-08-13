@@ -1,10 +1,9 @@
 orjson==3.9.15
-pydantic-settings==2.2.1
 aiokafka==0.10.0
 redis==5.0.8
 loguru==0.7.2
 aioprometheus==23.12.0
-retry_async
+retry-async==0.1.4
 # ML
 numpy==2.0.1
 scipy==1.14.0

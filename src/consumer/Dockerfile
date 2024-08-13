@@ -6,7 +6,6 @@ ENV TZ='Europe/Moscow'
 
 # hadolint ignore=DL3008
 RUN apt-get update && \
-    apt-get install --no-install-recommends -y git && \
     pip install --no-cache-dir --upgrade pip==24.* && \
     rm -rf /var/lib/apt/lists/*
 

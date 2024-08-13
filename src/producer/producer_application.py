@@ -1,17 +1,10 @@
 import asyncio
-import functools
 import logging
 import typing
 
 import aiokafka
-import retry_async
 
 logger = logging.getLogger("kafka-producer")
-
-_retry = functools.partial(
-    retry_async.retry,
-    is_async=True,
-)
 
 Key: typing.TypeAlias = typing.Optional[bytes]
 Value: typing.TypeAlias = typing.Optional[bytes]
@@ -33,7 +26,6 @@ class ProducerApplication:
         self._sasl_plain_username = sasl_plain_username
         self._sasl_plain_password = sasl_plain_password
 
-    @retry_async.retry(tries=3, delay=15, is_async=True)
     async def produce(
         self,
         topics: list[str],
@@ -53,10 +45,10 @@ class ProducerApplication:
             sasl_plain_password=self._sasl_plain_password,
             loop=loop,
         )
-        await _retry(tries=3, delay=5)(producer.start)()
+        await producer.start()
         for key, value in messages:
             for topic in topics:
                 logger.info(f"Producing message {key}:{value} to topic {topic}")
-                await _retry(tries=3, delay=5)(producer.send_and_wait)(topic, value=value, key=key)
+                await producer.send_and_wait(topic, value=value, key=key)
 
-        await _retry(tries=3, delay=5)(producer.stop)()
+        await producer.stop()

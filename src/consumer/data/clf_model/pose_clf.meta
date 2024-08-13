@@ -1,0 +1,317 @@
+{
+    "name": "clf_model/pose_clf",
+    "description": "Model for classifying physical exercises",
+    "version": "1.0",
+    "classes": {
+        "0": "dips",
+        "1": "squats",
+        "2": "pullups",
+        "3": "negative",
+        "4": "lunges",
+        "5": "pushups",
+        "6": "abs"
+    },
+    "negative": "3",
+    "descriptor": {
+        "type": "<class 'src.PoseDescriptor.PoseDescriptor'>",
+        "params": {
+            "use_ANGLES": true,
+            "use_AXIS": true,
+            "use_DISTANCES": false,
+            "point_description": {
+                "ANGLES": {
+                    "Head position": [
+                        [
+                            5,
+                            0
+                        ],
+                        [
+                            0,
+                            6
+                        ]
+                    ],
+                    "Left side(Head and arm)": [
+                        [
+                            0,
+                            5
+                        ],
+                        [
+                            5,
+                            7
+                        ]
+                    ],
+                    "Left hand": [
+                        [
+                            5,
+                            7
+                        ],
+                        [
+                            7,
+                            9
+                        ]
+                    ],
+                    "Left hand and left side": [
+                        [
+                            7,
+                            5
+                        ],
+                        [
+                            5,
+                            11
+                        ]
+                    ],
+                    "Left side and left leg": [
+                        [
+                            5,
+                            11
+                        ],
+                        [
+                            11,
+                            13
+                        ]
+                    ],
+                    "Left leg": [
+                        [
+                            11,
+                            13
+                        ],
+                        [
+                            13,
+                            15
+                        ]
+                    ],
+                    "Right side(Head and arm)": [
+                        [
+                            0,
+                            6
+                        ],
+                        [
+                            6,
+                            8
+                        ]
+                    ],
+                    "Right hand": [
+                        [
+                            6,
+                            8
+                        ],
+                        [
+                            8,
+                            10
+                        ]
+                    ],
+                    "Right hand and right side": [
+                        [
+                            8,
+                            6
+                        ],
+                        [
+                            6,
+                            12
+                        ]
+                    ],
+                    "Right side and right leg": [
+                        [
+                            6,
+                            12
+                        ],
+                        [
+                            12,
+                            14
+                        ]
+                    ],
+                    "Right leg": [
+                        [
+                            12,
+                            14
+                        ],
+                        [
+                            14,
+                            16
+                        ]
+                    ]
+                },
+                "AXIS": {
+                    "Corpuse": [
+                        [
+                            5,
+                            6
+                        ],
+                        [
+                            11,
+                            12
+                        ]
+                    ],
+                    "Hips": [
+                        [
+                            11,
+                            12
+                        ],
+                        [
+                            13,
+                            14
+                        ]
+                    ],
+                    "Legs": [
+                        [
+                            13,
+                            14
+                        ],
+                        [
+                            15,
+                            16
+                        ]
+                    ],
+                    "Global": [
+                        [
+                            0,
+                            0
+                        ],
+                        [
+                            13,
+                            14
+                        ]
+                    ]
+                },
+                "DISTANCES": {
+                    "Nose and left sholder": [
+                        0,
+                        5
+                    ],
+                    "Nose and left wrist": [
+                        0,
+                        9
+                    ],
+                    "Nose and left knee": [
+                        0,
+                        13
+                    ],
+                    "left wrist and ankle": [
+                        9,
+                        15
+                    ],
+                    "left elbow and knee": [
+                        7,
+                        13
+                    ],
+                    "left hip and ankle": [
+                        11,
+                        15
+                    ],
+                    "left sholder and knee": [
+                        5,
+                        13
+                    ],
+                    "left sholder and wrist": [
+                        5,
+                        9
+                    ],
+                    "Nose and right sholder": [
+                        0,
+                        6
+                    ],
+                    "Nose and right wrist": [
+                        0,
+                        10
+                    ],
+                    "Nose and right knee": [
+                        0,
+                        14
+                    ],
+                    "right wrist and ankle": [
+                        10,
+                        16
+                    ],
+                    "right elbow and knee": [
+                        8,
+                        14
+                    ],
+                    "right hip and ankle": [
+                        12,
+                        16
+                    ],
+                    "right sholder and knee": [
+                        6,
+                        15
+                    ],
+                    "right sholder and wrist": [
+                        6,
+                        10
+                    ],
+                    "wrists": [
+                        9,
+                        10
+                    ],
+                    "elbows": [
+                        7,
+                        8
+                    ],
+                    "knees": [
+                        13,
+                        14
+                    ],
+                    "ankles": [
+                        15,
+                        16
+                    ]
+                },
+                "dist_norm_coef": [
+                    6,
+                    [
+                        13,
+                        15
+                    ],
+                    [
+                        14,
+                        16
+                    ]
+                ]
+            }
+        }
+    },
+    "model": {
+        "type": "<class 'xgboost.sklearn.XGBClassifier'>",
+        "score": 0.9903330192929997,
+        "params": {
+            "objective": "multi:softprob",
+            "base_score": null,
+            "booster": null,
+            "callbacks": null,
+            "colsample_bylevel": null,
+            "colsample_bynode": null,
+            "colsample_bytree": null,
+            "device": null,
+            "early_stopping_rounds": null,
+            "enable_categorical": false,
+            "eval_metric": null,
+            "feature_types": null,
+            "gamma": null,
+            "grow_policy": null,
+            "importance_type": null,
+            "interaction_constraints": null,
+            "learning_rate": null,
+            "max_bin": null,
+            "max_cat_threshold": null,
+            "max_cat_to_onehot": null,
+            "max_delta_step": null,
+            "max_depth": null,
+            "max_leaves": null,
+            "min_child_weight": null,
+            "missing": NaN,
+            "monotone_constraints": null,
+            "multi_strategy": null,
+            "n_estimators": null,
+            "n_jobs": null,
+            "num_parallel_tree": null,
+            "random_state": null,
+            "reg_alpha": null,
+            "reg_lambda": null,
+            "sampling_method": null,
+            "scale_pos_weight": null,
+            "subsample": null,
+            "tree_method": null,
+            "validate_parameters": null,
+            "verbosity": null
+        }
+    }
+}

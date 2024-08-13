@@ -2,7 +2,6 @@ import asyncio
 import logging
 import time
 import typing
-from concurrent.futures import process, thread
 
 import orjson
 import retry_async
@@ -49,13 +48,11 @@ class PointsHandler:
         model: models.Model,
         result_producer: ResultProducer | None = None,
         history_storage: HistoryStorage | None = None,
-        pool_executor: process.ProcessPoolExecutor | thread.ThreadPoolExecutor | None = None,
         loop: asyncio.AbstractEventLoop | None = None,
     ) -> None:
         self._model = model
         self._result_producer = result_producer or DevNullResultProducer()
         self._history_storage = history_storage or InMemoryHistoryStorage()
-        self._executor = pool_executor
         self._loop = loop or asyncio.get_event_loop()
         # Чтобы нормально работал retry
         self.__name__ = self.__class__.__name__
@@ -88,8 +85,7 @@ class PointsHandler:
         history_key_str = f'{value.get("user_id")}|{value.get("ex_id")}|{value.get("label")}'
         history_record = await self._history_storage.read_history(history_key_str)
 
-        result, new_history_record = await self._loop.run_in_executor(
-            self._executor,
+        result, new_history_record = await asyncio.to_thread(
             self._gather_result,
             self._model,
             history_record,

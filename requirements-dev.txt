@@ -1,7 +1,7 @@
 -r ./requirements.txt
-
 flake8==7.0.0
 flake8-pytest
-black
+ruff
+pyright
 isort
 pre-commit==3.8.0

@@ -18,7 +18,7 @@ class Model:
     ) -> None:
         self.pose_clf = pose_clf
         self.labels, self.negative_key = self.pose_clf.get_labels()
-        self.negative_key = int(self.negative_key)
+        self.negative_key = int(self.negative_key or 0)
 
         self.labels = {int(k): v for k, v in self.labels.items()}
         self.labels = np.array([self.labels[key] for key in sorted(self.labels.keys())])

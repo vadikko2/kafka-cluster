@@ -19,7 +19,7 @@ logging.getLogger("asyncio").setLevel("ERROR")
 CONSUMERS_NUMBER = int(settings.config["Service"]["consumers_number"])
 
 
-def bootstrap_on_message(model_path: str = None) -> consumer_application.Handler:
+def bootstrap_on_message(model_path: str | None = None) -> consumer_application.Handler:
     """Ининциализация обработчика событий"""
     model_path = model_path or settings.config["Model"]["model_path"]
     with open(model_path + ".dat", "rb") as f:
@@ -51,7 +51,7 @@ def bootstrap_on_message(model_path: str = None) -> consumer_application.Handler
 
 def bootstrap_consumer_task(
     on_message: consumer_application.Handler,
-    loop: asyncio.AbstractEventLoop = None,
+    loop: asyncio.AbstractEventLoop,
 ) -> typing.Coroutine:
     """Ининциализация консьюмера"""
     return consumer_application.ConsumerApplication(

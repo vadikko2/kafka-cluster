@@ -1,3 +1,5 @@
+import typing
+
 import numpy as np
 
 # Default Point config
@@ -116,7 +118,7 @@ class PoseDescriptor:
         self.AXIS_features = sorted(self.AXIS.keys())
         self.DISTANCES_features = sorted(self.DISTANCES.keys())
 
-    def set_params(self, params: dict):
+    def set_params(self, params: dict) -> None:
 
         if "use_ANGLES" in params:
             self.use_ANGLES = bool(params["use_ANGLES"])
@@ -142,7 +144,7 @@ class PoseDescriptor:
         self.AXIS_features = sorted(self.AXIS.keys())
         self.DISTANCES_features = sorted(self.DISTANCES.keys())
 
-    def get_params(self):
+    def get_params(self) -> typing.Dict:
         return {
             "use_ANGLES": self.use_ANGLES,
             "use_AXIS": self.use_AXIS,
@@ -166,7 +168,7 @@ class PoseDescriptor:
 
         return features
 
-    def __call__(self, frame: np.ndarray):
+    def __call__(self, frame: np.ndarray) -> np.ndarray:
         frame_data = []
         bip = np.abs(self.mask - np.squeeze(np.multiply(frame, [self.h, self.w, 1])))
 

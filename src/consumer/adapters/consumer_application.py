@@ -61,7 +61,7 @@ class ConsumerApplication:
         handler: Handler,
         consumer_batch_size: int = 100,
         consumer_timeout_ms: int = 500,
-        loop: asyncio.AbstractEventLoop = None,
+        loop: asyncio.AbstractEventLoop | None = None,
     ):
         """Данный метод является единицей, которую можно запускать в отдельном потоке."""
         loop = loop or asyncio.get_event_loop()
@@ -73,7 +73,7 @@ class ConsumerApplication:
         )
         consumer = aiokafka.AIOKafkaConsumer(
             *topics,
-            bootstrap_servers=self._bootstrap_servers,
+            bootstrap_servers=",".join(self._bootstrap_servers),
             group_id=self._group_id,
             fetch_max_wait_ms=consumer_timeout_ms,
             enable_auto_commit=False,

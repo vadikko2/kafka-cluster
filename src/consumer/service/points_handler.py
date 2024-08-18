@@ -79,16 +79,20 @@ class PointsHandler:
 
     @retry_async.retry(tries=3, delay=0.05, is_async=True)
     async def __call__(self, key: typing.Optional[bytes], value: typing.Optional[bytes]) -> None:
-        value = orjson.loads(value.decode("utf-8"))
-        history_key_str = f'{value.get("user_id")}|{value.get("ex_id")}|{value.get("label")}'
+        if key is None or value is None:
+            logger.warning(f"Unsupported values key: {key}, value: {value}")
+            return
+
+        value_dict = orjson.loads(value)
+        history_key_str = f'{value_dict.get("user_id")}|{value_dict.get("ex_id")}|{value_dict.get("label")}'
         history_record = await self._history_storage.read_history(history_key_str)
 
         result, new_history_record = await asyncio.to_thread(
             self._gather_result,
             self._model,
             history_record,
-            value,
+            value_dict,
         )
 
-        await self._result_producer.produce(result, value.get("task_id"))
+        await self._result_producer.produce(result, value_dict.get("task_id"))
         await self._history_storage.append_to_history(new_history_record, history_key_str)

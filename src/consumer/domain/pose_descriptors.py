@@ -2,6 +2,7 @@ import typing
 
 import numpy as np
 
+
 # Default Point config
 
 ANGLES = {
@@ -119,7 +120,6 @@ class PoseDescriptor:
         self.DISTANCES_features = sorted(self.DISTANCES.keys())
 
     def set_params(self, params: dict) -> None:
-
         if "use_ANGLES" in params:
             self.use_ANGLES = bool(params["use_ANGLES"])
 
@@ -174,11 +174,20 @@ class PoseDescriptor:
 
         dnc = point_dist(
             np.fliplr(
-                np.mean([bip[:, self.dist_norm_coef[1][0]][:-1], bip[:, self.dist_norm_coef[1][1]][:-1]], axis=0),
+                np.mean(
+                    [
+                        bip[:, self.dist_norm_coef[1][0]][:-1],
+                        bip[:, self.dist_norm_coef[1][1]][:-1],
+                    ],
+                    axis=0,
+                ),
             ),
             np.fliplr(
                 np.mean(
-                    [bip[:, self.dist_norm_coef[2][0]][:-1], bip[:, self.dist_norm_coef[2][1]][:-1]],
+                    [
+                        bip[:, self.dist_norm_coef[2][0]][:-1],
+                        bip[:, self.dist_norm_coef[2][1]][:-1],
+                    ],
                     axis=0,
                 ),
             ),
@@ -201,7 +210,8 @@ class PoseDescriptor:
                 c4 = bip[:, k[1][1], 2]
 
                 angle_bones = np.where(
-                    ((c1 > self.threshold) & (c2 > self.threshold)) & ((c3 > self.threshold) & (c4 > self.threshold)),
+                    ((c1 > self.threshold) & (c2 > self.threshold))
+                    & ((c3 > self.threshold) & (c4 > self.threshold)),
                     angle_bones,
                     -1,
                 )
@@ -212,8 +222,12 @@ class PoseDescriptor:
             for name in self.AXIS_features:
                 k = self.AXIS[name]
 
-                a = np.fliplr(np.mean([bip[:, k[0][0]][:, :-1], bip[:, k[0][1]][:, :-1]], axis=0))
-                b = np.fliplr(np.mean([bip[:, k[1][0]][:, :-1], bip[:, k[1][1]][:, :-1]], axis=0))
+                a = np.fliplr(
+                    np.mean([bip[:, k[0][0]][:, :-1], bip[:, k[0][1]][:, :-1]], axis=0),
+                )
+                b = np.fliplr(
+                    np.mean([bip[:, k[1][0]][:, :-1], bip[:, k[1][1]][:, :-1]], axis=0),
+                )
 
                 _, angle_axis = axis_angle_descr(a, b)
                 angle_axis /= 180
@@ -224,7 +238,8 @@ class PoseDescriptor:
                 c4 = bip[:, k[1][1], 2]
 
                 angle_axis = np.where(
-                    ((c1 > self.threshold) & (c2 > self.threshold)) & ((c3 > self.threshold) & (c4 > self.threshold)),
+                    ((c1 > self.threshold) & (c2 > self.threshold))
+                    & ((c3 > self.threshold) & (c4 > self.threshold)),
                     angle_axis,
                     -1,
                 )

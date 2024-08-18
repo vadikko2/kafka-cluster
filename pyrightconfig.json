@@ -1,4 +1,22 @@
 {
   "venvPath": ".",
-  "venv": "venv"
+  "venv": "venv",
+  "include": ["src"],
+  "exclude": ["**/__pycache__", "venv"],
+  "ignore": ["src/data"],
+  "reportMissingImports": "error",
+  "reportMissingTypeStubs": false,
+  "defineConstant": {
+    "DEBUG": true
+  },
+  "pythonVersion": "3.12",
+  "pythonPlatform": "Linux",
+  "executionEnvironments": [
+    {
+      "root": "src/",
+      "pythonVersion": "3.12",
+      "pythonPlatform": "Linux",
+      "reportMissingImports": "error"
+    }
+  ]
 }

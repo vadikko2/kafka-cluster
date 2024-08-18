@@ -1,4 +1,4 @@
-import json
+import orjson
 import time
 
 from loguru import logger
@@ -83,8 +83,8 @@ class RedisDriver:
     @metrics.hist_timer(metrics.latency_histogram, {"latency": "redis"})
     @metrics.timer(metrics.latency_summary, {"latency": "redis"})
     async def redis_result(self, ps):
-
         count = False
+        result: bytes | None = None
         async for message in ps.listen():
             if not count:
                 count = True
@@ -95,8 +95,9 @@ class RedisDriver:
 
         await ps.unsubscribe()
         await ps.close()
-
-        return json.loads(result)
+        if result is None:
+            raise Exception("Result not recieved")
+        return orjson.loads(result)
 
     async def publish(self, key, value, ex):
         key_str = str(key)
@@ -113,17 +114,30 @@ class RedisDriver:
         try:
             st_t = time.time()
             master = self.connection.master_for(self.service)
-            await master.set(f'{settings.config["Service"]["service_name"]}|readiness', "readiness", 2)
+            await master.set(
+                f'{settings.config["Service"]["service_name"]}|readiness',
+                "readiness",
+                2,
+            )
             await master.close()
             end_t = time.time()
             wait_time = end_t - st_t
             if wait_time < 2:
-                metrics.healthcheck.set({"healthcheck": "redis"}, metrics.STATUS_HEALTHY)
+                metrics.healthcheck.set(
+                    {"healthcheck": "redis"},
+                    metrics.STATUS_HEALTHY,
+                )
             else:
-                metrics.healthcheck.set({"healthcheck": "redis"}, metrics.STATUS_DEGRADATION)
+                metrics.healthcheck.set(
+                    {"healthcheck": "redis"},
+                    metrics.STATUS_DEGRADATION,
+                )
             return True
         except Exception as err:
             logger.exception(err)
-            metrics.healthcheck.set({"healthcheck": "redis"}, metrics.STATUS_UNAVAILABLE)
+            metrics.healthcheck.set(
+                {"healthcheck": "redis"},
+                metrics.STATUS_UNAVAILABLE,
+            )
 
         return False

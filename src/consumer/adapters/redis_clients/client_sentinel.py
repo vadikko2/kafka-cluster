@@ -96,7 +96,7 @@ class RedisDriver:
         await ps.unsubscribe()
         await ps.close()
         if result is None:
-            raise Exception("Result not recieved")
+            raise RedisError("Result not recieved")
         return orjson.loads(result)
 
     async def publish(self, key, value, ex):

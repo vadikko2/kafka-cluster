@@ -41,7 +41,9 @@ def bootstrap_on_message(model_path: str | None = None) -> consumer_application.
             ),
             model_config=settings.config["Model"],
         ),
-        result_producer=result_producers.RedisResultProducer(redis_client=client.CustomRedis()),
+        result_producer=result_producers.RedisResultProducer(
+            redis_client=client.CustomRedis(),
+        ),
         history_storage=history_storages.RedisHistoryStorage(
             redis_client=client.CustomRedis(),
             ttl=int(settings.config["Redis"]["ttl"]),
@@ -62,8 +64,12 @@ def bootstrap_consumer_task(
         topics=[settings.config["KafkaConsumer"]["topic"]],
         handler=on_message,
         loop=loop,
-        consumer_batch_size=int(settings.config["KafkaConsumer"]["consumer_batch_size"]),
-        consumer_timeout_ms=int(settings.config["KafkaConsumer"]["consumer_timeout_ms"]),
+        consumer_batch_size=int(
+            settings.config["KafkaConsumer"]["consumer_batch_size"],
+        ),
+        consumer_timeout_ms=int(
+            settings.config["KafkaConsumer"]["consumer_timeout_ms"],
+        ),
     )
 
 

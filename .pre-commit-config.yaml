@@ -61,3 +61,4 @@ repos:
   hooks:
   - id: pyright
     types: [python]
+    args: [--config=pyrightconfig.json]
